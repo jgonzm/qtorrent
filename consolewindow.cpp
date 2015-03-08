@@ -19,6 +19,10 @@ bool ConsoleWindow::start(CommandLineParseResult *inputparams)
 {
     this->cmd = inputparams;
 
+    session_settings settings;
+    settings.disk_cache_algorithm = session_settings::lru;
+    s.set_settings(settings);
+
     s.start_dht();
     error_code ec;
     s.listen_on(std::make_pair(6886, 9893), ec);
@@ -35,11 +39,12 @@ bool ConsoleWindow::start(CommandLineParseResult *inputparams)
             qDebug() << ec.message().c_str();
             return false;
         }
+        p.storage_mode = (storage_mode_t)allocation_mode;
         handle = s.add_torrent(p, ec);
         handle.set_sequential_download(true);
-
     } else if (!cmd->input_magnet.isEmpty()) {
         p.url = cmd->input_magnet.toStdString().c_str();
+        p.storage_mode = (storage_mode_t)allocation_mode;
         parse_magnet_uri(cmd->input_magnet.toStdString().c_str(), p, ec);
         torrent_handle a = add_magnet_uri(s, cmd->input_magnet.toStdString(), p, ec);
         s.add_torrent(p, ec);
@@ -68,6 +73,7 @@ void ConsoleWindow::updateState()
     if (!handle.is_valid()) {
         if (s.get_torrents().size()) {
             handle = s.get_torrents().at(0);
+            handle.set_sequential_download(true);
         }
         return;
     }
