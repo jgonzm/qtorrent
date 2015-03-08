@@ -25,10 +25,11 @@ SOURCES += consolewindow.cpp \
            commandlineparseresult.cpp \
            main.cpp \
 
-LIBS += "/opt/local/lib/libcrypto.a" \
-        "/opt/local/lib/libz.a" \
-        "/opt/local/lib/libssl.a" \
-        "/opt/local/lib/libboost_system-mt.a" \
+LIBS += "-L/opt/local/lib/" \
+        "-lcrypto" \
+        "-lz" \
+        "-lssl" \
+        "-lboost_system-mt" \
         "$$PWD/libtorrent-rasterbar-1.0.3/src/.libs/libtorrent-rasterbar.a"
 
 QMAKE_CXXFLAGS += -fvisibility=hidden
