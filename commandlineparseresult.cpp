@@ -12,6 +12,9 @@ int CommandLineParseResult::parseCommandLine()
     const QCommandLineOption inputOption("i", "The torrent file.", "input");
     parser.addOption(inputOption);
 
+    const QCommandLineOption inputMagnetOption("m", "The magnet torrent.", "input");
+    parser.addOption(inputMagnetOption);
+
     const QCommandLineOption outputOption("o", "Output directory.", "output");
     parser.addOption(outputOption);
 
@@ -33,14 +36,18 @@ int CommandLineParseResult::parseCommandLine()
         return CommandLineHelpRequested;
     }
 
-    if (parser.isSet(inputOption)) {
-        input = parser.value(inputOption);
+    if (parser.isSet(inputMagnetOption)) {
+        input_magnet = parser.value(inputMagnetOption);
     } else {
-        if (parser.positionalArguments().size() <= 0) {
-            this->helpRequested();
-            return CommandLineError;
+        if (parser.isSet(inputOption)) {
+            input = parser.value(inputOption);
         } else {
-            input = parser.positionalArguments().at(0);
+            if (parser.positionalArguments().size() <= 0) {
+                this->helpRequested();
+                return CommandLineError;
+            } else {
+                input = parser.positionalArguments().at(0);
+            }
         }
     }
 

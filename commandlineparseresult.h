@@ -15,6 +15,7 @@ class CommandLineParseResult : public QObject
 public:
     CommandLineParseResult();
     QString input;
+    QString input_magnet;
     QString output;
 
 

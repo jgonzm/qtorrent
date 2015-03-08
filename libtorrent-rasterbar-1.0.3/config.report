@@ -34,7 +34,7 @@ Features:
   pool allocators:      yes
 
 Extra builds:
-  examples:             yes
+  examples:             no
   tests:                no
   python bindings:      no
 

@@ -2,6 +2,13 @@
 
 #include "consolewindow.h"
 
+int allocation_mode = libtorrent::storage_mode_sparse;
+/*
+if (strcmp(arg, "allocate") == 0) allocation_mode = storage_mode_allocate;
+else if (strcmp(arg, "full") == 0) allocation_mode = storage_mode_allocate;
+else if (strcmp(arg, "sparse") == 0) allocation_mode = storage_mode_sparse;
+*/
+
 ConsoleWindow::ConsoleWindow()
 {
     connect(&timer, SIGNAL(timeout()), this, SLOT(updateState()));
@@ -14,7 +21,7 @@ bool ConsoleWindow::start(CommandLineParseResult *inputparams)
 
     s.start_dht();
     error_code ec;
-    s.listen_on(std::make_pair(6884, 6893), ec);
+    s.listen_on(std::make_pair(6886, 9893), ec);
     if (ec)
     {
         qDebug() << "failed to open listen socket:" << ec.message().c_str();
@@ -22,24 +29,31 @@ bool ConsoleWindow::start(CommandLineParseResult *inputparams)
     }
 
     p.save_path = "./";
-    p.ti = new torrent_info(cmd->input.toLocal8Bit().data(), ec);
-    torrent_handle();
-    if (ec)
-    {
-        qDebug() << ec.message().c_str();
-        return false;
+    if (!cmd->input.isEmpty()) {
+        p.ti = new torrent_info(cmd->input.toLocal8Bit().data(), ec);
+        if (ec) {
+            qDebug() << ec.message().c_str();
+            return false;
+        }
+        handle = s.add_torrent(p, ec);
+        handle.set_sequential_download(true);
+
+    } else if (!cmd->input_magnet.isEmpty()) {
+        p.url = cmd->input_magnet.toStdString().c_str();
+        parse_magnet_uri(cmd->input_magnet.toStdString().c_str(), p, ec);
+        torrent_handle a = add_magnet_uri(s, cmd->input_magnet.toStdString(), p, ec);
+        s.add_torrent(p, ec);
     }
-    handle = s.add_torrent(p, ec);
-    handle.set_sequential_download(true);
-    if (ec)
-    {
+
+    if (ec) {
         qDebug() << ec.message().c_str();
         return false;
     }
 
-    torrent_info ti = handle.get_torrent_info();
-
-    showInfo(ti);
+    if (handle.is_valid()) {
+        torrent_info ti = handle.get_torrent_info();
+        showInfo(ti);
+    }
 
     return true;
 }
@@ -51,6 +65,13 @@ bool ConsoleWindow::addTorrent()
 
 void ConsoleWindow::updateState()
 {
+    if (!handle.is_valid()) {
+        if (s.get_torrents().size()) {
+            handle = s.get_torrents().at(0);
+        }
+        return;
+    }
+
     if (handle.status().state == torrent_status::downloading) {
         printing();
         return;
@@ -65,6 +86,9 @@ void ConsoleWindow::updateState()
     {
     case torrent_status::downloading:
         printing();
+        break;
+    case torrent_status::downloading_metadata:
+        qDebug() << "Downloading metadata";
         break;
     case torrent_status::finished:
         qDebug() << "finished";
@@ -91,7 +115,7 @@ void ConsoleWindow::printing()
 {
     double download_rate = s.status().download_rate / 1024;
     if (download_rate == 0) return;
-    double total_size = p.ti->total_size() / 1024;
+    double total_size = handle.get_torrent_info().total_size()/ 1024;
 
     std::vector<size_type> progress;
     handle.file_progress(progress);
