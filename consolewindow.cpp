@@ -24,6 +24,7 @@ bool ConsoleWindow::start(CommandLineParseResult *inputparams)
     s.set_settings(settings);
 
     s.start_dht();
+    s.set_upload_rate_limit(cmd->outkb.toInt());
     error_code ec;
     s.listen_on(std::make_pair(6886, 9893), ec);
     if (ec)

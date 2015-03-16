@@ -18,6 +18,9 @@ int CommandLineParseResult::parseCommandLine()
     const QCommandLineOption outputOption("o", "Output directory.", "output");
     parser.addOption(outputOption);
 
+    const QCommandLineOption updateOption("u", "Max. kb/s up", "outkb");
+    parser.addOption(updateOption);
+
     parser.addPositionalArgument("name", "The name to look up.");
     const QCommandLineOption helpOption = parser.addHelpOption();
     const QCommandLineOption versionOption = parser.addVersionOption();
@@ -34,6 +37,10 @@ int CommandLineParseResult::parseCommandLine()
     if (parser.isSet(helpOption)) {
         helpRequested();
         return CommandLineHelpRequested;
+    }
+
+    if (parser.isSet(updateOption)) {
+        outkb = parser.value(updateOption);
     }
 
     if (parser.isSet(inputMagnetOption)) {

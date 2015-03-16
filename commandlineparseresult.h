@@ -17,6 +17,7 @@ public:
     QString input;
     QString input_magnet;
     QString output;
+    QString outkb;
 
 
     int parseCommandLine();
