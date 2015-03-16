@@ -29,15 +29,15 @@ bool ConsoleWindow::start(CommandLineParseResult *inputparams)
     settings.disk_cache_algorithm = session_settings::lru;
     s.set_settings(settings);
 
-    s.start_dht();
     s.set_local_upload_rate_limit(cmd->outkb.toInt());
     error_code ec;
-    s.listen_on(std::make_pair(6886, 9893), ec);
+    s.listen_on(std::make_pair(55535, 65535), ec);
     if (ec)
     {
         qDebug() << "failed to open listen socket:" << ec.message().c_str();
         return false;
     }
+    s.start_dht();
 
     p.save_path = "./";
     if (!cmd->input.isEmpty()) {
