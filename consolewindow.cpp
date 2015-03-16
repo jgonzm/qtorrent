@@ -15,6 +15,12 @@ ConsoleWindow::ConsoleWindow()
     timer.start(2000);
 }
 
+ConsoleWindow::~ConsoleWindow()
+{
+    s.stop_dht();
+    s.remove_torrent(handle);
+}
+
 bool ConsoleWindow::start(CommandLineParseResult *inputparams)
 {
     this->cmd = inputparams;
@@ -24,7 +30,7 @@ bool ConsoleWindow::start(CommandLineParseResult *inputparams)
     s.set_settings(settings);
 
     s.start_dht();
-    s.set_upload_rate_limit(cmd->outkb.toInt());
+    s.set_local_upload_rate_limit(cmd->outkb.toInt());
     error_code ec;
     s.listen_on(std::make_pair(6886, 9893), ec);
     if (ec)

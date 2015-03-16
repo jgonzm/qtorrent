@@ -3,6 +3,7 @@
 
 CommandLineParseResult::CommandLineParseResult()
 {
+    outkb = "";
 }
 
 int CommandLineParseResult::parseCommandLine()

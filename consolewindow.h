@@ -23,6 +23,7 @@ class ConsoleWindow : public QObject
     Q_OBJECT
 public:
     ConsoleWindow();
+    ~ConsoleWindow();
     bool start(CommandLineParseResult *inputparams);
     bool addTorrent();
 
