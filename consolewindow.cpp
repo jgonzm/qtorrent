@@ -38,6 +38,8 @@ bool ConsoleWindow::start(CommandLineParseResult *inputparams)
         return false;
     }
     s.start_dht();
+    s.start_upnp();
+    s.start_natpmp();
 
     p.save_path = "./";
     if (!cmd->input.isEmpty()) {
