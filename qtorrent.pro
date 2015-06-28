@@ -15,7 +15,7 @@ CONFIG   += static
 
 TEMPLATE = app
 
-INCLUDEPATH += .//libtorrent-rasterbar-1.0.3/include \
+INCLUDEPATH += .//libtorrent-rasterbar-1.0.5/include \
                 /opt/local/include \
 
 HEADERS += consolewindow.h \
@@ -30,7 +30,7 @@ LIBS += "-L/opt/local/lib/" \
         "-lz" \
         "-lssl" \
         "-lboost_system-mt" \
-        "$$PWD/libtorrent-rasterbar-1.0.3/src/.libs/libtorrent-rasterbar.a"
+        "$$PWD/libtorrent-rasterbar-1.0.5/src/.libs/libtorrent-rasterbar.a"
 
 QMAKE_CXXFLAGS += -fvisibility=hidden
 
